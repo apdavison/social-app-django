@@ -1,4 +1,5 @@
 # coding=utf-8
+import logging
 from django.conf import settings
 from django.http import HttpResponse, HttpRequest
 from django.db.models import Model
@@ -13,6 +14,8 @@ from django.utils.translation import get_language
 
 from social_core.strategy import BaseStrategy, BaseTemplateStrategy
 from .compat import get_request_port
+
+logger = logging.getLogger("social_django")
 
 
 def render_template_string(request, html, context=None):
@@ -37,6 +40,7 @@ class DjangoStrategy(BaseStrategy):
     def __init__(self, storage, request=None, tpl=None):
         self.request = request
         self.session = request.session if request else {}
+        logger.debug("Creating DjangoStrategy. request={} session={} storage={} tpl={}".format(request, self.session, storage, tpl))
         super(DjangoStrategy, self).__init__(storage, tpl)
 
     def get_setting(self, name):
@@ -114,6 +118,7 @@ class DjangoStrategy(BaseStrategy):
         return args, kwargs
 
     def session_get(self, name, default=None):
+        logger.debug("DjangoStrategy.session_get name={} default={} self.session={}".format(name, default, self.session))
         return self.session.get(name, default)
 
     def session_set(self, name, value):
